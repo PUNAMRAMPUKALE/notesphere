@@ -18,5 +18,19 @@ CREATE TABLE IF NOT EXISTS notes (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
+
 CREATE INDEX IF NOT EXISTS idx_notes_user_updated
   ON notes(user_id, updated_at DESC);
+
+-- attachments
+
+CREATE TABLE IF NOT EXISTS attachments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  note_id   UUID NOT NULL REFERENCES notes(id)  ON DELETE CASCADE,
+  user_id   UUID NOT NULL REFERENCES users(id)  ON DELETE CASCADE,
+  object_key   TEXT NOT NULL,
+  content_type TEXT,
+  size_bytes   BIGINT,
+  created_at   TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_attachments_note ON attachments(note_id, created_at DESC);
