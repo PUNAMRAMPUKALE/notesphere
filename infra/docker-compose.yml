@@ -6,12 +6,21 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/notesphere
       - JWT_SECRET=dev-secret
     depends_on: [postgres]
+
+  notes:
+    build: ../services/notes-service
+    environment:
+      - PORT=3002
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/notesphere
+      - JWT_SECRET=dev-secret
+    depends_on: [postgres]
+
   gateway:
     image: nginx:1.27-alpine
     ports: ["8080:80"]
     volumes:
       - ../docker/gateway/nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on: [auth]    # make gateway wait for auth  
+    depends_on: [auth, notes]    # make gateway wait for auth  
 
   postgres:
     image: postgres:16-alpine
